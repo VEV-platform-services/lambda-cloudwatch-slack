@@ -287,19 +287,32 @@ var handleSESBounce = function (event, context) {
         fields: [
           {
             title: "Bounce recipients",
-            value: message.bouncedRecipients
+            value: message.bounce.bouncedRecipients
               ?.map((recipient) => recipient.emailAddress)
               .join(", "),
             short: false,
           },
           { title: "Source", value: message.mail.source, short: true },
-          { title: "Bounce Type", value: message.bounceType, short: true },
           {
-            title: "Bounce Sub Type",
-            value: message.bounceSubType,
+            title: "Bounce Type",
+            value: message.bounce.bounceType,
             short: true,
           },
-          { title: "Timestamp", value: message.timestamp, short: true },
+          {
+            title: "Bounce Sub Type",
+            value: message.bounce.bounceSubType,
+            short: true,
+          },
+          {
+            title: "Bounce Timestamp",
+            value: message.bounce.timestamp,
+            short: true,
+          },
+          {
+            title: "Sent Timestamp",
+            value: message.mail.timestamp,
+            short: true,
+          },
         ],
         ts: timestamp,
       },
@@ -321,7 +334,7 @@ var handleSESComplaint = function (event, context) {
         fields: [
           {
             title: "Complaint recipients",
-            value: message.complainedRecipients
+            value: message.complaint.complainedRecipients
               ?.map((recipient) => recipient.emailAddress)
               .join(", "),
             short: false,
@@ -329,15 +342,24 @@ var handleSESComplaint = function (event, context) {
           { title: "Source", value: message.mail.source, short: true },
           {
             title: "complaintFeedbackType",
-            value: message.complaintFeedbackType,
+            value: message.complaint.complaintFeedbackType,
             short: true,
           },
           {
             title: "complaintSubType",
-            value: message.complaintSubType,
+            value: message.complaint.complaintSubType,
             short: true,
           },
-          { title: "Timestamp", value: message.timestamp, short: true },
+          {
+            title: "Complaint Timestamp",
+            value: message.complaint.timestamp,
+            short: true,
+          },
+          {
+            title: "Sent Timestamp",
+            value: message.mail.timestamp,
+            short: true,
+          },
         ],
         ts: timestamp,
       },
