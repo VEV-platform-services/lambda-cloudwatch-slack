@@ -314,7 +314,7 @@ var handleSESBounce = function (event, context) {
             short: true,
           },
         ],
-        ts: timestamp,
+        ts: message.bounce.timestamp,
       },
     ],
   };
@@ -361,7 +361,7 @@ var handleSESComplaint = function (event, context) {
             short: true,
           },
         ],
-        ts: timestamp,
+        ts: message.complaint.timestamp,
       },
     ],
   };
