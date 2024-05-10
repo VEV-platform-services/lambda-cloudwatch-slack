@@ -227,6 +227,15 @@ var handleElasticache = function(event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
+var getFirstMetricLabel = function(data) {
+  const metrics = data.Trigger.Metrics;
+  if (metrics.length > 0) {
+      return metrics[0].Label;
+  } else {
+      return "No metrics available"; // or handle this case as needed
+  }
+}
+
 var handleCloudWatch = function(event, context) {
   var timestamp = (new Date(event.Records[0].Sns.Timestamp)).getTime()/1000;
   var message = JSON.parse(event.Records[0].Sns.Message);
@@ -234,11 +243,10 @@ var handleCloudWatch = function(event, context) {
   var subject = "AWS CloudWatch Notification";
   var alarmName = message.AlarmName;
   var metricName = message.Trigger.MetricName;
-  var label = message.Trigger.Label;
+  var label = getFirstMetricLabel(message)
   var oldState = message.OldStateValue;
   var newState = message.NewStateValue;
   var alarmDescription = message.AlarmDescription;
-  var alarmReason = message.NewStateReason;
   var trigger = message.Trigger;
   var color = "warning";
 
