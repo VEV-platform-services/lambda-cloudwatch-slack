@@ -234,6 +234,7 @@ var handleCloudWatch = function(event, context) {
   var subject = "AWS CloudWatch Notification";
   var alarmName = message.AlarmName;
   var metricName = message.Trigger.MetricName;
+  var label = message.Trigger.Label;
   var oldState = message.OldStateValue;
   var newState = message.NewStateValue;
   var alarmDescription = message.AlarmDescription;
@@ -246,7 +247,7 @@ var handleCloudWatch = function(event, context) {
   } else if (message.NewStateValue === "OK") {
       color = "good";
   }
-
+  
   var slackMessage = {
     text: "*" + subject + "*",
     attachments: [
@@ -257,8 +258,7 @@ var handleCloudWatch = function(event, context) {
           { "title": "Alarm Description", "value": alarmDescription, "short": false},
           {
             "title": "Trigger",
-            "value": trigger.Statistic + " "
-              + metricName + " "
+            "value": (trigger.Statistic && metricName ? trigger.Statistic + " " + metricName : label) + " "
               + trigger.ComparisonOperator + " "
               + trigger.Threshold + " for "
               + trigger.EvaluationPeriods + " period(s) of "
