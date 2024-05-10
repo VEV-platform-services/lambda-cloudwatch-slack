@@ -15,7 +15,7 @@ var postMessage = function(message, callback) {
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(body),
   };
-
+  console.log('Posting cloudwatch message', { body, options });
   var postReq = https.request(options, function(res) {
     var chunks = [];
     res.setEncoding('utf8');
