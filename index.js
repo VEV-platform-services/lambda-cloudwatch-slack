@@ -7,7 +7,7 @@ let hookUrl;
 
 const baseSlackMessage = {};
 
-const postMessage = function (message, callback) {
+const postMessage = (message, callback) => {
   const body = JSON.stringify(message);
   const options = url.parse(hookUrl);
   options.method = "POST";
@@ -16,13 +16,11 @@ const postMessage = function (message, callback) {
     "Content-Length": Buffer.byteLength(body),
   };
   console.log("Posting cloudwatch message", { body, options });
-  const postReq = https.request(options, function (res) {
+  const postReq = https.request(options, (res) => {
     const chunks = [];
     res.setEncoding("utf8");
-    res.on("data", function (chunk) {
-      return chunks.push(chunk);
-    });
-    res.on("end", function () {
+    res.on("data", (chunk) => chunks.push(chunk));
+    res.on("end", () => {
       const body = chunks.join("");
       if (callback) {
         callback({
@@ -39,13 +37,13 @@ const postMessage = function (message, callback) {
   postReq.end();
 };
 
-const isoDateToSlackFormat = function (isoDate) {
-  const date = new Date(isoDateTime);
+const isoDateToSlackFormat = (isoDate) => {
+  const date = new Date(isoDate);
   const timestampMillis = date.getTime();
   return (timestampMillis / 1000).toFixed(6);
-}
+};
 
-const handleCodePipeline = function (event, context) {
+const handleCodePipeline = (event, context) => {
   const subject = "AWS CodePipeline Notification";
   const timestamp = new Date(event.Records[0].Sns.Timestamp).getTime() / 1000;
   let message;
@@ -55,10 +53,10 @@ const handleCodePipeline = function (event, context) {
 
   try {
     message = JSON.parse(event.Records[0].Sns.Message);
-    let detailType = message["detail-type"];
+    const detailType = message["detail-type"];
 
     if (detailType === "CodePipeline Pipeline Execution State Change") {
-      changeType = '';
+      changeType = "";
     } else if (detailType === "CodePipeline Stage Execution State Change") {
       changeType = "STAGE " + message.detail.stage;
     } else if (detailType === "CodePipeline Action Execution State Change") {
@@ -70,7 +68,7 @@ const handleCodePipeline = function (event, context) {
     } else if (message.detail.state === "FAILED") {
       color = "danger";
     }
-    let header = message.detail.state + ": CodePipeline " + changeType;
+    const header = message.detail.state + ": CodePipeline " + changeType;
     fields.push({ title: "Message", value: header, short: false });
     fields.push({
       title: "Pipeline",
@@ -90,7 +88,8 @@ const handleCodePipeline = function (event, context) {
   } catch (e) {
     color = "good";
     message = event.Records[0].Sns.Message;
-    let header = message.detail.state + ": CodePipeline " + message.detail.pipeline;
+    const header =
+      message.detail.state + ": CodePipeline " + message.detail.pipeline;
     fields.push({ title: "Message", value: header, short: false });
     fields.push({ title: "Detail", value: message, short: false });
   }
@@ -109,7 +108,7 @@ const handleCodePipeline = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const handleElasticache = function (event, context) {
+const handleElasticache = (event, context) => {
   const subject = "AWS ElastiCache Notification";
   const message = JSON.parse(event.Records[0].Sns.Message);
   const timestamp = new Date(event.Records[0].Sns.Timestamp).getTime() / 1000;
@@ -148,7 +147,7 @@ const handleElasticache = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const handleSESBounce = function (event, context) {
+const handleSESBounce = (event, context) => {
   const subject = "AWS SES Bounce Notification";
   const color = "danger";
   const message = JSON.parse(event.Records[0].Sns.Message);
@@ -195,7 +194,7 @@ const handleSESBounce = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const handleSESComplaint = function (event, context) {
+const handleSESComplaint = (event, context) => {
   const subject = "AWS SES Complaint Notification";
   const color = "danger";
   const message = JSON.parse(event.Records[0].Sns.Message);
@@ -242,7 +241,7 @@ const handleSESComplaint = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const getFirstMetricLabel = function (data) {
+const getFirstMetricLabel = (data) => {
   const metrics = data.Trigger.Metrics;
   if (metrics.length > 0) {
     return metrics[0].Label;
@@ -251,7 +250,7 @@ const getFirstMetricLabel = function (data) {
   }
 };
 
-const handleCloudWatch = function (event, context) {
+const handleCloudWatch = (event, context) => {
   const timestamp = new Date(event.Records[0].Sns.Timestamp).getTime() / 1000;
   const message = JSON.parse(event.Records[0].Sns.Message);
   const region = event.Records[0].EventSubscriptionArn.split(":")[3];
@@ -315,7 +314,7 @@ const handleCloudWatch = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const handleAutoScaling = function (event, context) {
+const handleAutoScaling = (event, context) => {
   const subject = "AWS AutoScaling Notification";
   const message = JSON.parse(event.Records[0].Sns.Message);
   const timestamp = new Date(event.Records[0].Sns.Timestamp).getTime() / 1000;
@@ -343,7 +342,7 @@ const handleAutoScaling = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const handleCatchAll = function (event, context) {
+const handleCatchAll = (event, context) => {
   const record = event.Records[0];
   const subject = record.Sns.Subject;
   const timestamp = new Date(record.Sns.Timestamp).getTime() / 1000;
@@ -384,7 +383,7 @@ const handleCatchAll = function (event, context) {
   return _.merge(slackMessage, baseSlackMessage);
 };
 
-const processEvent = function (event, context) {
+const processEvent = (event, context) => {
   console.log("sns received:" + JSON.stringify(event, null, 2));
   let slackMessage = null;
   const eventSubscriptionArn = event.Records[0].EventSubscriptionArn;
@@ -458,7 +457,7 @@ const processEvent = function (event, context) {
     slackMessage = handleCatchAll(event, context);
   }
 
-  postMessage(slackMessage, function (response) {
+  postMessage(slackMessage, (response) => {
     if (response.statusCode < 400) {
       console.info("message posted successfully");
       context.succeed();
@@ -483,7 +482,7 @@ const processEvent = function (event, context) {
   });
 };
 
-exports.handler = function (event, context) {
+exports.handler = (event, context) => {
   if (hookUrl) {
     processEvent(event, context);
   } else if (config.unencryptedHookUrl) {
@@ -497,7 +496,7 @@ exports.handler = function (event, context) {
     const cipherText = { CiphertextBlob: encryptedBuf };
     const kms = new AWS.KMS();
 
-    kms.decrypt(cipherText, function (err, data) {
+    kms.decrypt(cipherText, (err, data) => {
       if (err) {
         console.log("decrypt error: " + err.toString());
         processEvent(event, context);
