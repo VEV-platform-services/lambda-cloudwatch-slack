@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const url = require("url");
 const https = require("https");
-const config = require("./config.mjs");
+const config = require("./config");
 const _ = require("lodash");
 let hookUrl;
 
