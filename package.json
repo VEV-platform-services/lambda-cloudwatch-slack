@@ -7,7 +7,7 @@
     "Cody Reichert <codyreichert@gmail.com>",
     "Alexandr Promakh <s-promakh@ya.ru>"
   ],
-  "type": "commonjs",
+  "type": "module",
   "config": {
     "progress": "true"
   },
