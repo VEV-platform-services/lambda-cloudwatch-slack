@@ -182,6 +182,11 @@ const handleSESBounce = (event, context) => {
             short: true,
           },
           {
+            title: "Subject",
+            value: message.mail.commonHeaders.subject,
+            short: true,
+          },
+          {
             title: "Sent Timestamp",
             value: message.mail.timestamp,
             short: true,
@@ -226,6 +231,11 @@ const handleSESComplaint = (event, context) => {
           {
             title: "Complaint Timestamp",
             value: message.complaint.timestamp,
+            short: true,
+          },
+          {
+            title: "Subject",
+            value: message.mail.commonHeaders.subject,
             short: true,
           },
           {
